@@ -1,6 +1,8 @@
 package homework;
 
-public class MyHashMap<E> {
+import java.util.Objects;
+
+public class MyHashMap<K, V> {
     //Потрібно робити за допомогою однозв'язної Node.
     //Не може зберігати дві ноди з однаковими ключами.
     //put(Object key, Object value) додає пару ключ + значення
@@ -9,65 +11,68 @@ public class MyHashMap<E> {
     //size() повертає розмір колекції
     //get(Object key) повертає значення (Object value) за ключем
 
-    private Node<E> firstNode;
-    private Node<E> lastNode;
+    private Node<K, V> head;
+    private Node<K, V> tail;
     private int size = 0;
     
-    private class Node<E> {
-        E key;
-        E value;
-        Node<E> nextNode;
-        private Node(E key, E value){
+    private class Node<K, V> {
+        private K key;
+        private V value;
+        private Node<K, V> nextNode;
+        private Node(K key, V value){
             this.key = key;
             this.value = value;
             nextNode = null;
         }
 
-        public E getKey() {
+        public K getKey() {
             return key;
         }
 
-        public E getValue() {
+        public V getValue() {
             return value;
         }
 
-        public Node<E> getNextNode() {
+        public Node<K, V> getNextNode() {
             return nextNode;
         }
 
-        public void setNextNode(Node<E> nextNode) {
+        public void setNextNode(Node<K, V> nextNode) {
             this.nextNode = nextNode;
         }
     }
     
-    public void put(E key, E value) {
-        Node<E> newNode = new Node<>(key, value);
-        if (firstNode == null) {
-            firstNode = lastNode = newNode;
+    public void put(K key, V value) {
+        if (key == null || value == null) {
+            throw new IllegalArgumentException("The given value is null, please set correct value");
+        }
+        Node<K, V> newNode = new Node<>(key, value);
+        if (head == null) {
+            head = tail = newNode;
         } else {
-            lastNode.setNextNode(newNode);
-            lastNode = newNode;
+            tail.setNextNode(newNode);
+            tail = newNode;
         }
         size++;
     }
 
-    public void remove(E key) {
-        Node<E> getter = firstNode;
+    public void remove(K key) {
+        Node<K, V> searchOfRemoved = head;
         int beforeRemoved = 0;
-        while (!getter.getKey().equals(key)) {
-            getter = getter.nextNode;
+        while (!searchOfRemoved.getKey().equals(key)) {
+            searchOfRemoved = searchOfRemoved.getNextNode();
             beforeRemoved++;
         }
-        Node<E> beforeGetter = firstNode;
+        Node<K, V> searchBeforeRemoved = head;
         for (int i = 0; i < beforeRemoved - 1; i++) {
-            beforeGetter = beforeGetter.getNextNode();
+            searchBeforeRemoved = searchBeforeRemoved.getNextNode();
         }
-        beforeGetter.setNextNode(beforeGetter.getNextNode().getNextNode());
+        searchBeforeRemoved.setNextNode(searchBeforeRemoved.getNextNode().getNextNode());
         size--;
     }
 
     public void clear() {
-        firstNode = lastNode = null;
+        head = tail = null;
         size = 0;
     }
 
@@ -75,28 +80,33 @@ public class MyHashMap<E> {
         return size;
     }
 
-    public E get(E key) {
-        Node<E> getter = firstNode;
-        while (!getter.getKey().equals(key)) {
-            getter = getter.nextNode;
+    public V get(K key) {
+        Node<K, V> searchOfValue = head;
+        while (!searchOfValue.getKey().equals(key)) {
+            searchOfValue = searchOfValue.getNextNode();
         }
-        return getter.getValue();
+        return searchOfValue.getValue();
     }
 
     /////////////////////////////////////////////////////////////////////
 
-    private Node<E> nodeGetter(int index) {
-        Node<E> nodeGetter = firstNode;
+    private Node<K, V> getNode(int index) {
+        Objects.checkIndex(index, size);
+        Node<K, V> searchOfNode = head;
         for (int i = 0; i < index; i++) {
-            nodeGetter = nodeGetter.getNextNode();
+            searchOfNode = searchOfNode.getNextNode();
         }
-        return nodeGetter;
+        return searchOfNode;
     }
 
-    public void hashMapToString() {
+    @Override
+    public String toString() {
+        Node<K, V> printer = head;
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < size; i++) {
-            System.out.print(nodeGetter(i).getValue() + " ");
+            result.append(printer.getKey()).append("=").append(printer.getValue()).append(" ");
+            printer = printer.getNextNode();
         }
+        return result.toString();
     }
-
 }

@@ -1,68 +1,78 @@
 package homework;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class MyArrayList<E> {
-//    Можна використовувати 1 масив для зберігання даних.
-//    add(Object value) додає елемент в кінець
-//    remove(int index) видаляє елемент із вказаним індексом
-//    clear() очищає колекцію
-//    size() повертає розмір колекції
-//    get(int index) повертає елемент за індексом
+    //Можна використовувати 1 масив для зберігання даних.
+    //add(Object value) додає елемент в кінець
+    //remove(int index) видаляє елемент із вказаним індексом
+    //clear() очищає колекцію
+    //size() повертає розмір колекції
+    //get(int index) повертає елемент за індексом
 
     private Object[] array;
     private int initialSize = 10;
-    private int indexAdd = 0;
+    private int size = 0;
 
     public MyArrayList() {
         array = new Object[initialSize];
     }
 
     public void add(E value) {
-        resizeIfNeeded();
-        array[indexAdd] = value;
-        indexAdd++;
+        if (value == null) {
+            throw new IllegalArgumentException("The given value is null, please set correct value");
+        }
+        resizeIfNeeded(size);
+        array[size] = value;
+        size++;
     }
 
     public void remove(int index) {
-        //Objects.checkIndex(index, indexAdd);
+        Objects.checkIndex(index, size);
         System.arraycopy(array, index + 1, array, index, array.length - index - 1);
-        indexAdd--;
-        /*for (int i = index; i < array.length - 1; i++) {
-            array[i] = array[i+1];
-        }
-        array[array.length - 1] = null;*/
+        size--;
     }
 
     public void clear() {
+        size = 0;
         initialSize = 10;
-        indexAdd = 0;
         array = new Object[initialSize];
     }
 
     public int size () {
-        return array.length;
+        return size;
     }
 
     public Object get(int index) {
-        //Objects.checkIndex(index, indexAdd);
+        Objects.checkIndex(index, size);
         return array[index];
     }
 
     /////////////////////////////////////////////////////////////////////
 
-    private void resizeIfNeeded() {
-        if(array.length == indexAdd) {
+    private void resizeIfNeeded(int index) {
+        Objects.checkIndex(index, size + 1);
+        if(array.length == index) {
             initialSize *= 1.5;
             Object[] toCopy = new Object[initialSize];
-            System.arraycopy(array, 0, toCopy,0, indexAdd);
+            System.arraycopy(array, 0, toCopy,0, size);
             array = toCopy;
         }
     }
 
-    public void add(int index, Object value) {
-        //Objects.checkIndex(index, indexAdd);
-        resizeIfNeeded();
-        System.arraycopy(array, index, array, index + 1, indexAdd - index);
+    public void add(int index, E value) {
+        if (value == null) {
+            throw new IllegalArgumentException("The given value is null, please set correct value");
+        }
+        resizeIfNeeded(index);
+        System.arraycopy(array, index, array, index + 1, size - index);
         array[index] = value;
+        size++;
     }
 
+    @Override
+    public String toString() {
+        return Arrays.toString(Arrays.copyOf(array, size));
+    }
 }

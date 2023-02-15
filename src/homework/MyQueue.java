@@ -1,7 +1,5 @@
 package homework;
 
-import java.util.Arrays;
-
 public class MyQueue<E> {
     //Написати свій клас MyQueue як аналог класу Queue, який буде працювати за принципом FIFO (first-in-first-out).
     //Можна робити за допомогою Node або використати масив.
@@ -11,21 +9,21 @@ public class MyQueue<E> {
     //peek() повертає перший елемент з черги
     //poll() повертає перший елемент з черги і видаляє його з колекції
 
-    private Node<E> firstNode;
-    private Node<E> lastNode;
+    private Node<E> head;
+    private Node<E> tail;
     private int size = 0;
 
     private class Node<E> {
-        private E object;
+        private E value;
         private Node<E> nextNode;
 
-        private Node(E object) {
-            this.object = object;
+        private Node(E value) {
+            this.value = value;
             nextNode = null;
         }
 
-        public E getObject() {
-            return object;
+        public E getValue() {
+            return value;
         }
 
         public void setNextNode(Node<E> nextNode) {
@@ -38,19 +36,22 @@ public class MyQueue<E> {
     }
 
     public void add(E object) {
+        if (object == null) {
+            throw new IllegalArgumentException("The given value is null, please set correct value");
+        }
         Node<E> newNode = new Node<>(object);
-        if(firstNode == null) {
-            firstNode = lastNode = newNode;
+        if(head == null) {
+            head = tail = newNode;
 
         } else {
-            lastNode.setNextNode(newNode);
-            lastNode = newNode;
+            tail.setNextNode(newNode);
+            tail = newNode;
         }
         size++;
     }
 
     public void clear() {
-        firstNode = lastNode = null;
+        head = tail = null;
         size = 0;
     }
 
@@ -59,15 +60,15 @@ public class MyQueue<E> {
     }
 
     public E peek() {
-        return firstNode.getObject();
+        return head.getValue();
     }
 
     public E poll() {
         if (size == 0) {
             return null;
         }
-        E deleted = firstNode.getObject();
-        firstNode = firstNode.getNextNode();
+        E deleted = head.getValue();
+        head = head.getNextNode();
         size--;
         return deleted;
     }
@@ -75,17 +76,23 @@ public class MyQueue<E> {
     /////////////////////////////////////////////////////////////////////
 
     public E get(int index) {
-        Node<E> getter = firstNode;
+        if (index < 0 || index >= size) {
+            System.out.println("There is no such element by index " + index + " for size " + size);
+            return null;
+        }
+        Node<E> searchOfElement = head;
         for (int i = 0; i < index; i++) {
-            getter = getter.getNextNode();
+            searchOfElement = searchOfElement.getNextNode();
         }
-        return getter.getObject();
+        return searchOfElement.getValue();
     }
 
-    public void myQueToString() {
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < size; i++) {
-            System.out.print(get(i) + " ");
+            result.append(get(i)).append(" ");
         }
+        return result.toString();
     }
-
 }

@@ -1,5 +1,7 @@
 package homework;
 
+import java.util.Objects;
+
 public class MyLinkedList<E> {
     //Не можна використовувати масив.
     //Кожний елемент повинен бути окремим об'єктом-посередником (Node - нода),
@@ -10,32 +12,32 @@ public class MyLinkedList<E> {
     //size() повертає розмір колекції
     //get(int index) повертає елемент за індексом
 
-    private Node<E> lastNull;
-    private Node<E> firstNull;
-    int sizeCounter = 0;
+    private Node<E> tail;
+    private Node<E> head;
+    private int size = 0;
 
     public MyLinkedList() {
-        lastNull = new Node<>(firstNull,null,null);
-        firstNull = new Node<>(null,null, lastNull);
+        tail = new Node<>(head, null, null);
+        head = new Node<>(null, null, tail);
     }
 
     private class Node<E> {
         private E element;
-        private Node<E> prevElement;
-        private Node<E> nextElement;
+        private Node<E> prevNode;
+        private Node<E> nextNode;
 
-        private Node(Node<E> prevElement, E element, Node<E> nextElement) {
+        private Node(Node<E> prevNode, E element, Node<E> nextNode) {
             this.element = element;
-            this.prevElement = prevElement;
-            this.nextElement = nextElement;
+            this.prevNode = prevNode;
+            this.nextNode = nextNode;
         }
 
-        public Node<E> getPrevElement() {
-            return prevElement;
+        public Node<E> getPrevNode() {
+            return prevNode;
         }
 
-        public void setPrevElement(Node<E> prevElement) {
-            this.prevElement = prevElement;
+        public void setPrevNode(Node<E> prevNode) {
+            this.prevNode = prevNode;
         }
 
         public E getElement() {
@@ -46,75 +48,76 @@ public class MyLinkedList<E> {
             this.element = element;
         }
 
-        public Node<E> getNextElement() {
-            return nextElement;
+        public Node<E> getNextNode() {
+            return nextNode;
         }
 
-        public void setNextElement(Node<E> nextElement) {
-            this.nextElement = nextElement;
+        public void setNextNode(Node<E> nextNode) {
+            this.nextNode = nextNode;
         }
-
-
-
-
     }
 
-    public void add(E object) {
-        Node<E> next = lastNull;
-        next.setElement(object);
-        lastNull = new Node<>(next,null, null);
-        next.setNextElement(lastNull);
-        sizeCounter++;
+    public void add(E value) {
+        if (value == null) {
+            throw new IllegalArgumentException("The given value is null, please set correct value");
+        }
+        Node<E> next = tail;
+        next.setElement(value);
+        tail = new Node<>(next,null, null);
+        next.setNextNode(tail);
+        size++;
     }
 
     public void remove(int index) {
+        Objects.checkIndex(index, size);
         if (index == 0) {
             Node<E> after = getNode(index + 1);
-            firstNull.setNextElement(after);
-            after.setPrevElement(firstNull);
-            sizeCounter--;
+            head.setNextNode(after);
+            after.setPrevNode(head);
         }
-        else if (index == sizeCounter - 1) {
+        else if (index == size - 1) {
             Node<E> before = getNode(index - 1);
-            lastNull.setPrevElement(before);
-            before.setNextElement(lastNull);
-            sizeCounter--;
+            tail.setPrevNode(before);
+            before.setNextNode(tail);
         }
         else {
             Node<E> after = getNode(index + 1);
             Node<E> before = getNode(index - 1);
-            after.setPrevElement(before);
-            before.setNextElement(after);
-            sizeCounter--;
+            after.setPrevNode(before);
+            before.setNextNode(after);
         }
+        size--;
     }
 
     public void clear() {
-        lastNull = new Node<>(firstNull,null,null);
-        firstNull = new Node<>(null,null, lastNull);
-        sizeCounter = 0;
+        tail = new Node<>(head,null,null);
+        head = new Node<>(null,null, tail);
+        size = 0;
     }
 
     public int size() {
-        return sizeCounter;
+        return size;
     }
 
     public E get(int index) {
-        Node<E> getter = firstNull.getNextElement();
-        for (int i = 0; i < index; i++) {
-            getter = getter.getNextElement();
+        Objects.checkIndex(index, size);
+        if (index >= size) {
+            return null;
         }
-        return getter.getElement();
+        Node<E> searchOfElement = head.getNextNode();
+        for (int i = 0; i < index; i++) {
+            searchOfElement = searchOfElement.getNextNode();
+        }
+        return searchOfElement.getElement();
     }
 
     /////////////////////////////////////////////////////////////////////
 
     private Node<E> getNode(int index) {
-        Node<E> getter = firstNull.getNextElement();
+        Node<E> searchOfNode = head.getNextNode();
         for (int i = 0; i < index; i++) {
-            getter = getter.getNextElement();
+            searchOfNode = searchOfNode.getNextNode();
         }
-        return getter;
+        return searchOfNode;
     }
-
 }

@@ -1,5 +1,7 @@
 package homework;
 
+import java.util.Objects;
+
 public class MyStack<E> {
     //Написати свій клас MyStack як аналог класу Stack, який працює за принципом LIFO (last-in-first-out).
     //Можна робити за допомогою Node або використати масив.
@@ -10,21 +12,21 @@ public class MyStack<E> {
     //peek() повертає перший елемент стеку
     //pop() повертає перший елемент стеку та видаляє його з колекції
 
-    private Node<E> firstNode;
-    private Node<E> lastNode;
+    private Node<E> head;
+    private Node<E> tail;
     private int size = 0;
 
     private class Node<E> {
-        private E object;
+        private E value;
         private Node<E> nextNode;
 
-        private Node(E object) {
-            this.object = object;
+        private Node(E value) {
+            this.value = value;
             nextNode = null;
         }
 
-        public E getObject() {
-            return object;
+        public E getValue() {
+            return value;
         }
 
         public void setNextNode(Node<E> nextNode) {
@@ -36,26 +38,30 @@ public class MyStack<E> {
         }
     }
 
-    public void push(E object) {
-        Node<E> newNode = new Node<>(object);
-        if(firstNode == null) {
-            firstNode = lastNode = newNode;
+    public void push(E value) {
+        if (value == null) {
+            throw new IllegalArgumentException("The given value is null, please set correct value");
+        }
+        Node<E> newNode = new Node<>(value);
+        if(head == null) {
+            head = tail = newNode;
 
         } else {
-            lastNode.setNextNode(newNode);
-            lastNode = newNode;
+            tail.setNextNode(newNode);
+            tail = newNode;
         }
         size++;
     }
 
     public void remove(int index) {
+        Objects.checkIndex(index, size);
         Node<E> beforeDeleted = getNode(index - 1);
         beforeDeleted.setNextNode(beforeDeleted.getNextNode().getNextNode());
         size--;
     }
 
     public void clear() {
-        firstNode = lastNode = null;
+        head = tail = null;
         size = 0;
     }
 
@@ -64,13 +70,13 @@ public class MyStack<E> {
     }
 
     public E peek() {
-        return getNode(size - 1).getObject();
+        return getNode(size - 1).getValue();
     }
 
     public E pop() {
-        E deleted = getNode(size - 1).getObject();
-        lastNode = getNode(size - 2);
-        lastNode.nextNode = null;
+        E deleted = getNode(size - 1).getValue();
+        tail = getNode(size - 2);
+        tail.nextNode = null;
         size--;
         return deleted;
     }
@@ -78,17 +84,31 @@ public class MyStack<E> {
     /////////////////////////////////////////////////////////////////////
 
     private Node<E> getNode(int index) {
-        Node<E> getter = firstNode;
+        Node<E> searchOfNode = head;
         for (int i = 0; i < index; i++) {
-            getter = getter.getNextNode();
+            searchOfNode = searchOfNode.getNextNode();
         }
-        return getter;
+        return searchOfNode;
     }
 
-    public void stackToString() {
-        for (int i = 0; i < size ; i++) {
-            System.out.print(getNode(i).getObject() + " ");
+    public E get(int index) {
+        if (index < 0 || index >= size) {
+            System.out.println("There is no such element by index " + index + " for size " + size);
+            return null;
         }
+        Node<E> searchOfElement = head;
+        for (int i = 0; i < index; i++) {
+            searchOfElement = searchOfElement.getNextNode();
+        }
+        return searchOfElement.getValue();
     }
 
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < size; i++) {
+            result.append(get(i)).append(" ");
+        }
+        return result.toString();
+    }
 }
