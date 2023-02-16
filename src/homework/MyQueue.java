@@ -1,5 +1,7 @@
 package homework;
 
+import java.util.Objects;
+
 public class MyQueue<E> {
     //Написати свій клас MyQueue як аналог класу Queue, який буде працювати за принципом FIFO (first-in-first-out).
     //Можна робити за допомогою Node або використати масив.
@@ -76,10 +78,7 @@ public class MyQueue<E> {
     /////////////////////////////////////////////////////////////////////
 
     public E get(int index) {
-        if (index < 0 || index >= size) {
-            System.out.println("There is no such element by index " + index + " for size " + size);
-            return null;
-        }
+        Objects.checkIndex(index, size);
         Node<E> searchOfElement = head;
         for (int i = 0; i < index; i++) {
             searchOfElement = searchOfElement.getNextNode();

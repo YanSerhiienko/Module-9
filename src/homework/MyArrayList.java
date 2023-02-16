@@ -54,7 +54,7 @@ public class MyArrayList<E> {
     private void resizeIfNeeded(int index) {
         Objects.checkIndex(index, size + 1);
         if(array.length == index) {
-            initialSize *= 1.5;
+            initialSize = (int)Math.ceil(initialSize * 1.5);
             Object[] toCopy = new Object[initialSize];
             System.arraycopy(array, 0, toCopy,0, size);
             array = toCopy;

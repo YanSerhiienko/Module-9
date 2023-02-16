@@ -82,10 +82,15 @@ public class MyHashMap<K, V> {
 
     public V get(K key) {
         Node<K, V> searchOfValue = head;
+        int counter = 0;
         while (!searchOfValue.getKey().equals(key)) {
             searchOfValue = searchOfValue.getNextNode();
+            counter++;
+            if (counter >= size) {
+                break;
+            }
         }
-        return searchOfValue.getValue();
+        return (counter >= size) ? (null) : (searchOfValue.getValue());
     }
 
     /////////////////////////////////////////////////////////////////////
